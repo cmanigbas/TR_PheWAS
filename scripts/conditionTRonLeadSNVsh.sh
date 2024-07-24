@@ -30,37 +30,37 @@ fi
 
 ### FIND LEAD SNP +/- 500 bp of TR
 function SNPregenie_step1 {
-    regenie \
-        --step 1 \
-        --bed ${VarIn} \
-        $command \
+	regenie \
+		--step 1 \
+		--bed ${VarIn} \
+		$command \
 		--phenoFile ${PhenoIn} \
-        --covarFile ${CovarIn} \
-        --phenoCol ${Phenoname} \
-        --bsize 100 \
-        --lowmem \
-        --lowmem-prefix tmp_rg.${suffix} 
-        --loocv \
-        --threads 18 \
-        --catCovarList $cmdCatVar \
-        --covarColList $cmdCovar \
-        --out ${SUFFIX}_Reg_S1 \
+		--covarFile ${CovarIn} \
+		--phenoCol ${Phenoname} \
+		--bsize 100 \
+		--lowmem \
+		--lowmem-prefix tmp_rg.${suffix} 
+		--loocv \
+		--threads 18 \
+		--catCovarList $cmdCatVar \
+		--covarColList $cmdCovar \
+		--out ${SUFFIX}_Reg_S1 \
 }
 function SNPregenie_step2 {
-    regenie \
-        --step 2 \
-        --bed ${VarIn} \
-        $command \
+	regenie \
+		--step 2 \
+		--bed ${VarIn} \
+		$command \
 		--phenoFile ${PhenoIn} \
 		--phenoCol ${Phenoname} \
-        --covarFile ${CovarIn} \
-        --bsize 100 \
-        --loocv \
-        --threads 18 \
+		--covarFile ${CovarIn} \
+		--bsize 100 \
+		--loocv \
+		--threads 18 \
 		--pThresh 0.05 ${command} 
 		--pred ${suffix}_Reg_S1
 		--minMAC 5 \
-        --out ${suffix}_Reg_S2 \
+		--out ${suffix}_Reg_S2 \
 }
 function runMetal {
 	### requires regenie results for sub-cohorts being meta-analyzed
@@ -96,22 +96,22 @@ function runMetal {
 ### $COHORT is the sequencing center sub-cohort that is most representative of all the samples 
 function divideTRintoLeadSNVgenotype {
 	bcftools view  -Ou --include ID==@${suffix}.LeadSNP $SNP_VCF |
-        bcftools query -f'[%ID\t%SAMPLE\t%GT\n]' | 
-        sed -e 's/0\/0/AA/' -e 's/0\/1/AB/' -e 's/1\/0/AB/' -e 's/1\/1/BB/' -e  's/.\/./NA/' > ${suffix}.LeadSNP.geno.txt
+	bcftools query -f'[%ID\t%SAMPLE\t%GT\n]' | 
+	sed -e 's/0\/0/AA/' -e 's/0\/1/AB/' -e 's/1\/0/AB/' -e 's/1\/1/BB/' -e  's/.\/./NA/' > ${suffix}.LeadSNP.geno.txt
    
-    cat ${suffix}.LeadSNP.geno.txt | awk -v cohort=$COHORT '{print $0,cohort}' OFS="\t" > ${suffix}.LeadSNP.geno.txt.temp
-    mv ${suffix}.LeadSNP.geno.txt.temp ${suffix}.LeadSNP.geno.txt
+	cat ${suffix}.LeadSNP.geno.txt | awk -v cohort=$COHORT '{print $0,cohort}' OFS="\t" > ${suffix}.LeadSNP.geno.txt.temp
+	mv ${suffix}.LeadSNP.geno.txt.temp ${suffix}.LeadSNP.geno.txt
+	
+	cat ${suffix}.LeadSNP.geno.txt | awk '$3=="AA"{print $2}' > ${suffix}.samples.AA
+	cat ${suffix}.LeadSNP.geno.txt | awk '$3=="AB"{print $2}' > ${suffix}.samples.AB
+	cat ${suffix}.LeadSNP.geno.txt | awk '$3=="BB"{print $2}' > ${suffix}.samples.BB
     
-    cat ${suffix}.LeadSNP.geno.txt | awk '$3=="AA"{print $2}' > ${suffix}.samples.AA
-    cat ${suffix}.LeadSNP.geno.txt | awk '$3=="AB"{print $2}' > ${suffix}.samples.AB
-    cat ${suffix}.LeadSNP.geno.txt | awk '$3=="BB"{print $2}' > ${suffix}.samples.BB
-    
-    for sample in `ls ${suffix}.samples.* | grep -e AA$ -e AB$ -e BB$`; do 
-        echo -e "\t ... extracting $TR in $sample"
-        echo $TR > ${PREFIX}.selectTR
-        bcftools view  -Oz --include ID==@${PREFIX}.selectTR $TR_VCF -S $sample --force-samples > ${sample}.TR.vcf.gz
-        plink2 --vcf ${sample}.TR.vcf.gz  'dosage=DS' --out ${sample}.TR  --double-id
-    done
+	for sample in `ls ${suffix}.samples.* | grep -e AA$ -e AB$ -e BB$`; do 
+		echo -e "\t ... extracting $TR in $sample"
+		echo $TR > ${PREFIX}.selectTR
+		bcftools view  -Oz --include ID==@${PREFIX}.selectTR $TR_VCF -S $sample --force-samples > ${sample}.TR.vcf.gz
+		plink2 --vcf ${sample}.TR.vcf.gz  'dosage=DS' --out ${sample}.TR  --double-id
+	done
 }	
 
 
@@ -121,21 +121,21 @@ function divideTRintoLeadSNVgenotype {
 ### 		${suffix}.AB.TR.pgen, ${suffix}.AB.TR.pvar, ${suffix}.AB.TR.psam 
 ###			${suffix}.BB.TR.pgen, ${suffix}.BB.TR.pvar, ${suffix}.BB.TR.psam 
 function TRconditioned_regenie_step1 {
-    regenie \
-        --step 1 \
-        --bed ${suffix}.AA.TR \
-        $command \
-		--phenoFile ${PhenoIn} \
-		--phenoCol ${Phenoname} \
-        --covarFile ${CovarIn} \
-        --bsize 100 \
-        --lowmem \
-        --lowmem-prefix tmp_rg.${suffix}.AA.TR
-        --loocv \
-        --threads 18 \
-        --catCovarList $cmdCatVar \
-        --covarColList $cmdCovar \
-        --out ${suffix}.AA.TR_Reg_S1 \
+	regenie \
+		--step 1 \
+		--bed ${suffix}.AA.TR \
+		$command \
+			--phenoFile ${PhenoIn} \
+			--phenoCol ${Phenoname} \
+		--covarFile ${CovarIn} \
+		--bsize 100 \
+		--lowmem \
+		--lowmem-prefix tmp_rg.${suffix}.AA.TR
+		--loocv \
+		--threads 18 \
+		--catCovarList $cmdCatVar \
+		--covarColList $cmdCovar \
+		--out ${suffix}.AA.TR_Reg_S1 \
 }
 function TRconditioned_regenie_step2 {
     regenie \
@@ -166,15 +166,15 @@ function runMetalTR_conditioned {
 		echo ALLELE ALLELE0 ALLELE1 >> $SCRIPT_FILE
 		echo EFFECT BETA >> $SCRIPT_FILE
 		echo PVAL P  >> $SCRIPT_FILE
-
+	
 		echo PROCESS ${regenie} >> $SCRIPT_FILE
 		echo >> $SCRIPT_FILE
 		echo >> $SCRIPT_FILE
-
+	
 	done 
 	echo OUTFILE $METAL_OUTFILE .txt >> $SCRIPT_FILE
 	echo ANALYZE >> $SCRIPT_FILE
-
+	
 	ml metal/2018-08-28
 	metal < $SCRIPT_FILE > $METAL_LOGFILE 2> $METAL_LOGFILE
 }
