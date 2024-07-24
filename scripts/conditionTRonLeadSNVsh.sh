@@ -18,17 +18,15 @@
 VarIn=$1				# prefix for flanking SNPS plink files (without .fileExtension)
 PhenoIn=$2				# phenotype table
 CovarIn=$3				# table of covariates
-Phenoname=$4			# phenotype ID
+Phenoname=$4				# phenotype ID
 suffix=$5				# file suffix				
-mode=$6					# binary or quant
+mode=$6					# binary or quant trait type
 
 if [[ $mode == "Binary "]]; 
 	command=" --bt --spa "
 elif [[ $mode == "Quant" ]];
 	command=" --qt --apply-rint "
 fi
-
-
 
 ### FIND LEAD SNP +/- 500 bp of TR
 function SNPregenie_step1 {
