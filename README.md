@@ -27,6 +27,3 @@ We performed conditional analysis in each TR:trait pair that was significant in 
 We performed statistical fine mapping using [CAVIAR](http://genetics.cs.ucla.edu/caviar/) on the Sanger Center sub-cohort using the
 top 100 most significantly associated SNVs per locus, as defined above. We calculated LD between SNVs and
 TRs by pairwise correlation. P-values from REGENIE were converted into z-scores and CAVIAR run using parameters ρ=0.95, γ=0.01 and the maximum number of causal variants was set to 2
-
-
-# Identification of TR QTLs
